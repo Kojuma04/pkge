@@ -1,5 +1,5 @@
 #!/bin/bash
-# dependencies: bash, coreutils, jq, wget, curl, tar, git
+# dependencies: bash, coreutils, jq, wget, curl, tar
 # set options to run the program
 OPTIONS=$(getopt -o hilRuV --long help,installed,list,remove,update,version: -- "$@")
 if [ $? != 0 ]
