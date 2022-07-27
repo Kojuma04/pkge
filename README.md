@@ -1,4 +1,4 @@
-# pkge
+# pkgge
 A package manager for proton-ge written in bash. <br>
 It can list, remove and install the latest and greatest proton-ge versions fresh from GlouriousEggrolls github-repo.
 
