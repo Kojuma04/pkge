@@ -13,7 +13,7 @@ It can list, remove and install the latest and greatest proton-ge versions fresh
 
 ## installation
 - make install.sh executable
-- run install.sh
+- run install.sh as root
 
 ## to-do
 - [ ] clean up the code
