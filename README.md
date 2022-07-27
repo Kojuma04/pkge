@@ -14,6 +14,7 @@ It can list, remove and install the latest and greatest proton-ge versions fresh
 ## installation
 - make install.sh executable
 - run install.sh as root
+- to uninstall do the same thing as you did with install.sh, just with uninstall.sh
 
 ## to-do
 - [ ] clean up the code
