@@ -125,7 +125,8 @@ elif [[ $UPDA = false && $VERS = true && $LIST = false && $HELP = false && $REMO
 elif [[ $UPDA = false && $VERS = false && $LIST = false && $HELP = false && $REMO = true && $INST = false ]]; then
   Remove_Proton
 elif [[ $UPDA = false && $VERS = false && $LIST = true && $HELP = false && $REMO = false && $INST = false ]]; then
-  git ls-remote -t --refs https://github.com/GloriousEggroll/proton-ge-custom | grep -v "proton-3" | cut -c 52-
+  curl -s "https://api.github.com/repos/GloriousEggroll/proton-ge-custom/releases?&per_page=100" | grep "tag_name" | cut -c 18- | tr -d '"' | tr -d ","
+  curl -s "https://api.github.com/repos/GloriousEggroll/proton-ge-custom/releases?&per_page=100&page=2" | grep "tag_name" | cut -c 18- | tr -d '"' | tr -d ","
 elif [[ $UPDA = false && $VERS = false && $LIST = false && $HELP = false && $REMO = false && $INST = true ]]; then
   ls $HOME/.steam/root/compatibilitytools.d
 elif [[ $UPDA = false && $VERS = false && $LIST = false && $HELP = true && $REMO = false && $INST = false ]]; then
