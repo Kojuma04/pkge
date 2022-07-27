@@ -11,6 +11,9 @@ It can list, remove and install the latest and greatest proton-ge versions fresh
 - tar
 - wget
 
+## installation
+- make install.sh executable
+- run install.sh
+
 ## to-do
-- [ ] create a install script (with the ability to uninstall it too)
 - [ ] clean up the code
