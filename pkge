@@ -1,0 +1,146 @@
+#!/bin/bash
+# dependencies: bash, coreutils, jq, wget, curl, tar, git
+# set options to run the program
+OPTIONS=$(getopt -o hilRuV --long help,installed,list,remove,update,version: -- "$@")
+if [ $? != 0 ]
+then
+  echo "Incorrect arguments, use [ -h | --help ] to get information about usage."
+  exit 1
+fi
+
+HELP=false
+INST=false
+LIST=false
+REMO=false
+UPDA=false
+VERS=false
+
+eval set -- "$OPTIONS"
+while true; do
+  case "$1" in
+    -h | --help) HELP=true; shift;;
+    -i | --installed) INST=true; shift;;
+    -l | --list) LIST=true; shift;;
+    -R ) VERSION=$3; REMO=true; shift;;
+    --remove) VERSION=$3; REMO=true; shift;;
+    -u | --update) UPDA=true; shift;;
+    -V) VERSION=$3; VERS=true; shift;;
+    --version) VERSION=$2; VERS=true; shift;;
+    --) shift; break;;
+    *) break;;
+  esac
+done
+
+# get home directory of the current user
+HOME=$(echo $HOME)
+
+Check_Package () {
+  if [ ${VERSION::2} == "GE" ]
+  then
+    PACKAGE="$VERSION"
+  else
+    PACKAGE="Proton-$VERSION"
+  fi
+}
+
+Create_Temp () {
+  if test -d "/tmp/$VERSION" 
+  then
+    echo "Removing /tmp/$VERSION"
+    rm -rf /tmp/$VERSION
+  fi
+  echo "Creating directory /tmp/$VERSION"
+  mkdir -p /tmp/$VERSION
+  cd /tmp/$VERSION
+}
+
+Extract_Package () {
+  echo "Extracting files..."
+  tar -xvf $PACKAGE.tar.gz &>/dev/null
+}
+
+Create_Dir () {
+  if test -d "$HOME/.steam/root/compatibilitytools.d" 
+  then
+    :
+  else
+    echo "Creating directory $HOME/.steam/root/compatibilitytools.d/"
+    mkdir -p $HOME/.steam/root/compatibilitytools.d
+  fi
+}
+
+Copy_Files () {
+  echo "Copying files to $HOME/.steam/root/compatibilitytools.d/"
+  cp -r $PACKAGE $HOME/.steam/root/compatibilitytools.d/$VERSION
+}
+
+Post_Clean () {
+  echo "Cleaning temp..."
+  rm -rf /tmp/$VERSION
+}
+
+Install_Proton () {
+  Check_Package
+  # check if version is already installed
+  if test -d "$HOME/.steam/root/compatibilitytools.d/$VERSION" 
+  then
+    echo "$VERSION is already installed."
+  else
+    Create_Temp
+    wget -q --show-progress https://github.com/GloriousEggroll/proton-ge-custom/releases/download/$VERSION/$PACKAGE.tar.gz
+    Extract_Package
+    Create_Dir
+    Copy_Files
+    Post_Clean
+  fi
+}
+
+Try_Rm () {
+  if test -d "$HOME/.steam/root/compatibilitytools.d" 
+  then
+    if test -d "$HOME/.steam/root/compatibilitytools.d/$VERSION"
+    then
+      echo "Removing $VERSION..."
+      rm -rf $HOME/.steam/root/compatibilitytools.d/$VERSION
+    else
+      echo "Nothing to remove."
+    fi
+  else
+    echo "Nothing to remove."
+  fi
+}
+
+Remove_Proton () {
+  Check_Package
+  Try_Rm
+}
+
+if [[ $UPDA = true && $VERS = false && $LIST = false && $HELP = false && $REMO = false && $INST = false ]]; then
+  # get the latest proton-ge version
+  VERSION=$(curl -sL https://api.github.com/repos/GloriousEggroll/proton-ge-custom/releases/latest | jq -r ".tag_name")
+  Install_Proton
+elif [[ $UPDA = false && $VERS = true && $LIST = false && $HELP = false && $REMO = false && $INST = false ]]; then
+  # get the proton-ge version
+  Install_Proton
+elif [[ $UPDA = false && $VERS = false && $LIST = false && $HELP = false && $REMO = true && $INST = false ]]; then
+  Remove_Proton
+elif [[ $UPDA = false && $VERS = false && $LIST = true && $HELP = false && $REMO = false && $INST = false ]]; then
+  git ls-remote -t --refs https://github.com/GloriousEggroll/proton-ge-custom | grep -v "proton-3" | cut -c 52-
+elif [[ $UPDA = false && $VERS = false && $LIST = false && $HELP = false && $REMO = false && $INST = true ]]; then
+  ls $HOME/.steam/root/compatibilitytools.d
+elif [[ $UPDA = false && $VERS = false && $LIST = false && $HELP = true && $REMO = false && $INST = false ]]; then
+  echo "Installs all proton versions from 4.5-GE-Beta-1 and upwards."
+  echo "Options:"
+  echo "    -h    --help        Opens this prompt"
+  echo "    -i    --installed   List all installed versions"
+  echo "    -l    --list        List all available versions"
+  echo "    -R    --remove      Removes a given version"
+  echo "          --remove="
+  echo "    -u    --update      Get the latest version"
+  echo "    -V    --version     Installs a given version"
+  echo "          --version="
+elif [[ $UPDA = false && $VERS = false && $LIST = false && $HELP = false && $REMO = false && $INST = false ]]; then
+  echo "No arguments given, use [ -h | --help ] to get information about usage."
+else
+  echo "Too many arguments, use [ -h | --help ] to get information about usage."
+fi
