@@ -6,7 +6,6 @@ It can list, remove and install the latest and greatest proton-ge versions fresh
 - bash
 - coreutils
 - curl
-- git
 - jq
 - tar
 - wget
