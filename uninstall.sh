@@ -1,2 +1,2 @@
 #!/bin/bash
-rm /usr/bin/pkge
+rm /usr/bin/pkggez
