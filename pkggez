@@ -1,4 +1,5 @@
 #!/bin/bash
+# dependencies: bash, coreutils, jq, wget, curl, tar
 # set options to run the program
 OPTIONS=$(getopt -o hilRuV --long help,installed,list,remove,update,version: -- "$@")
 if [ $? != 0 ]
@@ -116,7 +117,7 @@ Remove_Proton () {
 
 if [[ $UPDA = true && $VERS = false && $LIST = false && $HELP = false && $REMO = false && $INST = false ]]; then
   # get the latest proton-ge version
-  VERSION=$(curl -s https://api.github.com/repos/GloriousEggroll/proton-ge-custom/releases/latest | grep "tag_name" | cut -c 18- | tr -d '"' | tr -d ",")
+  VERSION=$(curl -s https://api.github.com/repos/GloriousEggroll/proton-ge-custom/releases/latest | grep "tag_name" | cut -c 16- | tr -d '"' | tr -d ",")
   Install_Proton
 elif [[ $UPDA = false && $VERS = true && $LIST = false && $HELP = false && $REMO = false && $INST = false ]]; then
   # get the proton-ge version
